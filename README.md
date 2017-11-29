@@ -13,14 +13,15 @@ demo环境：as3.0。文末附github地址。
 
 #### 1、去官网下载安卓版SDK，解压并开始配置
 app目录下新建libs文件夹，拷入jar包并add as library，具体如图
-
+![](http://http://img.blog.csdn.net/20171129161947120?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWVjaGFvYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
 
 然后main文件夹目录下新建aidl文件夹 
+![](http://img.blog.csdn.net/20171129162047492?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWVjaGFvYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
 
 main文件夹目录下新建jniLibs文件夹 
+![](http://img.blog.csdn.net/20171129162119817?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWVjaGFvYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
 
 #### 2、AndroidManifest文件中添加权限和service
-[html] view plain copy
 ```
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />  
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />  
@@ -40,28 +41,29 @@ main文件夹目录下新建jniLibs文件夹
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />  
     <uses-feature android:name="android.hardware.usb.host" />  
 ```
-[html] view plain copy
+
 ```
     <service  
-            android:name="com.gprinter.service.GpPrintService"  
-            android:enabled="true"  
-            android:exported="true"  
-            android:label="GpPrintService" >  
-            <intent-filter>  
-                <action android:name="com.gprinter.aidl.GpPrintService" />  
-            </intent-filter>  
-        </service>  
-        <service android:name="com.gprinter.service.AllService" >  
-        </service>  
+        android:name="com.gprinter.service.GpPrintService"  
+        android:enabled="true"  
+        android:exported="true"  
+        android:label="GpPrintService" >  
+        <intent-filter>  
+            <action android:name="com.gprinter.aidl.GpPrintService" />  
+        </intent-filter>  
+    </service>  
+    <service android:name="com.gprinter.service.AllService" >  
+    </service>  
 ```
 
-注意：ACCESS_COARSE_LOCATION权限在6.0+需要动态获取 
+* 注意：ACCESS_COARSE_LOCATION权限在6.0+需要动态获取 
 
 #### 3、在页面的onCreate中初始化service并bind
-[html] view plain copy
-startService();  
-        connection();  
-[html] view plain copy
+```
+    startService();  
+    connection();  
+```
+```
 private void startService() {  
        Intent i = new Intent(this, GpPrintService.class);  
        startService(i);  
@@ -88,18 +90,20 @@ private void startService() {
            mGpService = GpService.Stub.asInterface(service);  
        }  
    }  
+```
 
 #### 4、点击按钮触发打开、搜索、连接等一系列操作，可拆分
-[html] view plain copy
-findViewById(R.id.button_connect).setOnClickListener(new View.OnClickListener() {  
-            @Override  
-            public void onClick(View view) {  
-                Log.i(TAG, "onClick(MainActivity.java:78)--->> " + "onClick");  
-                searchBlueToothDevice();  
-            }  
-        });  
+```
+    findViewById(R.id.button_connect).setOnClickListener(new View.OnClickListener() {  
+        @Override  
+        public void onClick(View view) {  
+            Log.i(TAG, "onClick(MainActivity.java:78)--->> " + "onClick");  
+            searchBlueToothDevice();  
+        }  
+    });  
+```
 
-[html] view plain copy
+```
 public void searchBlueToothDevice() {  
         Log.i(TAG, "searchBlueToothDevice(MainActivity.java:112)--->> " + "searchBlueToothDevice");  
   
@@ -142,9 +146,10 @@ public void searchBlueToothDevice() {
             }  
         }  
     }  
+```
 
 ##### 接收的广播
-[html] view plain copy
+```
 public class MyBroadcastReceiver extends BroadcastReceiver {  
   
         @Override  
@@ -178,9 +183,10 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
             }  
         }  
     }  
+```
 
 ##### 弹出搜索到的蓝牙列表，点击开始连接
-[html] view plain copy
+```
 private void showBluetoothPop(final List<BluetoothBean> bluetoothList) {  
        pdSearch.dismiss();  
        View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_bluetooth, null);  
@@ -219,10 +225,11 @@ private void showBluetoothPop(final List<BluetoothBean> bluetoothList) {
        pw.setAnimationStyle(R.style.PopAnim);  
        //显示  
        pw.showAtLocation(view, Gravity.CENTER, 0, 0);  
-   }  
+   }
+```
 
 ##### 连接的方法
-[html] view plain copy
+```
 public synchronized void connect(String macAddress, BluetoothDevice device) {  
         if (mThread != null) {  
             mThread.interrupt();  
@@ -306,9 +313,10 @@ public synchronized void connect(String macAddress, BluetoothDevice device) {
             }  
         }  
     }  
+```
 
 ##### 连接状态的广播
-[html] view plain copy
+```
 private BroadcastReceiver printerStatusBroadcastReceiver = new BroadcastReceiver() {  
        @Override  
        public void onReceive(Context context, Intent intent) {  
@@ -336,9 +344,10 @@ private BroadcastReceiver printerStatusBroadcastReceiver = new BroadcastReceiver
            }  
        }  
    };  
+```
 
 ##### 连接成功的dialog
-[html] view plain copy
+```
 private void showSuccessDialog() {  
         pdSearch.dismiss();  
         DialogInterface.OnClickListener mOnClickListener = new DialogInterface.OnClickListener() {  
@@ -362,9 +371,10 @@ private void showSuccessDialog() {
         builder.setNegativeButton("取消", mOnClickListener);  
         builder.create().show();  
     }  
+```
 
 ##### 开始打印
-[html] view plain copy
+```
 private void printOrder() {  
         Log.i(TAG, "printOrder(MainActivity.java:495)--->> " + "printOrder");  
         LabelCommand tsc = new LabelCommand();  
@@ -400,7 +410,7 @@ private void printOrder() {
         tsc.addQRCode(200, 70, LabelCommand.EEC.LEVEL_L, 4, LabelCommand.ROTATION.ROTATION_0, " www.gprinter.com.cn");  
   
         // 绘制一维条码  
-//        tsc.add1DBarcode(20, 250, LabelCommand.BARCODETYPE.CODE128, 100, LabelCommand.READABEL.EANBEL, LabelCommand.ROTATION.ROTATION_0, "Gprinter");  
+//        tsc.add1DBarcode(20, 250, LabelCommand.BARCODETYPE.CODE128, 100, LabelCommand.READABEL.EANBEL,        LabelCommand.ROTATION.ROTATION_0, "Gprinter");  
   
         tsc.addPrint(1, 1); // 打印标签  
         tsc.addSound(2, 100); // 打印标签后 蜂鸣器响  
@@ -420,7 +430,6 @@ private void printOrder() {
             e.printStackTrace();  
         }  
     }  
-
-打印效果： 
+```
 
 以上基本是核心代码了，注释都有，按照上面这个顺序来走的话思路还是很清晰的 （就是权限没有动态获取，可参考Android6.0运行时权限。）
