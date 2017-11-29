@@ -3,15 +3,15 @@ Android蓝牙连打印机
 
 博客地址：http://blog.csdn.net/yechaoa/article/details/78666446
 
-![](https://github.com/yechaoa/PrinterDemo/raw/master/pic/p1.jpg) ?
-![](https://github.com/yechaoa/PrinterDemo/raw/master/pic/p2.jpg) ?
-![](https://github.com/yechaoa/PrinterDemo/raw/master/pic/p3.jpg) ?
+![](https://github.com/yechaoa/PrinterDemo/raw/master/pic/p1.jpg)
+![](https://github.com/yechaoa/PrinterDemo/raw/master/pic/p2.jpg)
+![](https://github.com/yechaoa/PrinterDemo/raw/master/pic/p3.jpg)
 
 
 以Gprinter佳博打印机为例，从蓝牙到打印。很简单的 >_<
 demo环境：as3.0。文末附github地址。
 
-1、去官网下载安卓版SDK，解压并开始配置
+#### 1、去官网下载安卓版SDK，解压并开始配置
 app目录下新建libs文件夹，拷入jar包并add as library，具体如图
 
 
@@ -19,9 +19,10 @@ app目录下新建libs文件夹，拷入jar包并add as library，具体如图
 
 main文件夹目录下新建jniLibs文件夹 
 
-2、AndroidManifest文件中添加权限和service
+#### 2、AndroidManifest文件中添加权限和service
 [html] view plain copy
-<uses-permission android:name="android.permission.READ_PHONE_STATE" />  
+```
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />  
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />  
     <uses-permission android:name="android.permission.INTERNET" />  
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />  
@@ -38,9 +39,10 @@ main文件夹目录下新建jniLibs文件夹
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />  
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />  
     <uses-feature android:name="android.hardware.usb.host" />  
-
+```
 [html] view plain copy
-<service  
+```
+    <service  
             android:name="com.gprinter.service.GpPrintService"  
             android:enabled="true"  
             android:exported="true"  
@@ -51,9 +53,11 @@ main文件夹目录下新建jniLibs文件夹
         </service>  
         <service android:name="com.gprinter.service.AllService" >  
         </service>  
+```
 
 注意：ACCESS_COARSE_LOCATION权限在6.0+需要动态获取 
-3、在页面的onCreate中初始化service并bind
+
+#### 3、在页面的onCreate中初始化service并bind
 [html] view plain copy
 startService();  
         connection();  
@@ -85,7 +89,7 @@ private void startService() {
        }  
    }  
 
-4、点击按钮触发打开、搜索、连接等一系列操作，可拆分
+#### 4、点击按钮触发打开、搜索、连接等一系列操作，可拆分
 [html] view plain copy
 findViewById(R.id.button_connect).setOnClickListener(new View.OnClickListener() {  
             @Override  
@@ -139,7 +143,7 @@ public void searchBlueToothDevice() {
         }  
     }  
 
-接收的广播
+##### 接收的广播
 [html] view plain copy
 public class MyBroadcastReceiver extends BroadcastReceiver {  
   
@@ -175,7 +179,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         }  
     }  
 
-弹出搜索到的蓝牙列表，点击开始连接
+##### 弹出搜索到的蓝牙列表，点击开始连接
 [html] view plain copy
 private void showBluetoothPop(final List<BluetoothBean> bluetoothList) {  
        pdSearch.dismiss();  
@@ -217,7 +221,7 @@ private void showBluetoothPop(final List<BluetoothBean> bluetoothList) {
        pw.showAtLocation(view, Gravity.CENTER, 0, 0);  
    }  
 
-连接的方法
+##### 连接的方法
 [html] view plain copy
 public synchronized void connect(String macAddress, BluetoothDevice device) {  
         if (mThread != null) {  
@@ -303,7 +307,7 @@ public synchronized void connect(String macAddress, BluetoothDevice device) {
         }  
     }  
 
-连接状态的广播
+##### 连接状态的广播
 [html] view plain copy
 private BroadcastReceiver printerStatusBroadcastReceiver = new BroadcastReceiver() {  
        @Override  
@@ -333,7 +337,7 @@ private BroadcastReceiver printerStatusBroadcastReceiver = new BroadcastReceiver
        }  
    };  
 
-连接成功的dialog
+##### 连接成功的dialog
 [html] view plain copy
 private void showSuccessDialog() {  
         pdSearch.dismiss();  
@@ -359,7 +363,7 @@ private void showSuccessDialog() {
         builder.create().show();  
     }  
 
-开始打印
+##### 开始打印
 [html] view plain copy
 private void printOrder() {  
         Log.i(TAG, "printOrder(MainActivity.java:495)--->> " + "printOrder");  
