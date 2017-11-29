@@ -8,18 +8,18 @@ Android蓝牙连打印机
 ![](https://github.com/yechaoa/PrinterDemo/raw/master/pic/p3.jpg)
 
 
-以Gprinter佳博打印机为例，从蓝牙到打印。很简单的 >_<
+以Gprinter佳博打印机为例，从蓝牙到打印。很简单的 >_< <br>
 demo环境：as3.0。文末附github地址。
 
 #### 1、去官网下载安卓版SDK，解压并开始配置
-app目录下新建libs文件夹，拷入jar包并add as library，具体如图
-![](http://http://img.blog.csdn.net/20171129161947120?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWVjaGFvYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+app目录下新建libs文件夹，拷入jar包并add as library，具体如图<br>
+![](http://img.blog.csdn.net/20171129161947120?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWVjaGFvYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
 
-然后main文件夹目录下新建aidl文件夹 
+然后main文件夹目录下新建aidl文件夹 <br>
 ![](http://img.blog.csdn.net/20171129162047492?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWVjaGFvYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
 
-main文件夹目录下新建jniLibs文件夹 
-![](http://img.blog.csdn.net/20171129162119817?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWVjaGFvYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+main文件夹目录下新建jniLibs文件夹 <br>
+![](http://img.blog.csdn.net/20171129161947120?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWVjaGFvYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
 
 #### 2、AndroidManifest文件中添加权限和service
 ```
@@ -56,7 +56,9 @@ main文件夹目录下新建jniLibs文件夹
     </service>  
 ```
 
+<br>
 * 注意：ACCESS_COARSE_LOCATION权限在6.0+需要动态获取 
+<br>
 
 #### 3、在页面的onCreate中初始化service并bind
 ```
@@ -432,4 +434,5 @@ private void printOrder() {
     }  
 ```
 
-以上基本是核心代码了，注释都有，按照上面这个顺序来走的话思路还是很清晰的 （就是权限没有动态获取，可参考Android6.0运行时权限。）
+以上基本是核心代码了，注释都有，按照上面这个顺序来走的话思路还是很清晰的<br>
+（就是权限没有动态获取，可参考[Android6.0运行时权限](http://blog.csdn.net/yechaoa/article/details/61920584)。）
