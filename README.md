@@ -1,6 +1,12 @@
 # PrinterDemo
 Android蓝牙连打印机
 
+博客地址：http://blog.csdn.net/yechaoa/article/details/78666446
+
+![](https://github.com/yechaoa/PrinterDemo/raw/master/pic/p1.jpg) ?
+![](https://github.com/yechaoa/PrinterDemo/raw/master/pic/p2.jpg) ?
+![](https://github.com/yechaoa/PrinterDemo/raw/master/pic/p3.jpg) ?
+
 
 以Gprinter佳博打印机为例，从蓝牙到打印。很简单的 >_<
 demo环境：as3.0。文末附github地址。
