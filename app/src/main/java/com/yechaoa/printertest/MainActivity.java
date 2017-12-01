@@ -44,6 +44,7 @@ import com.gprinter.service.GpPrintService;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.Vector;
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     private MyBroadcastReceiver receiver;//蓝牙搜索的广播
     private BluetoothAdapter adapter;//蓝牙适配器
     private List<BluetoothBean> mBluetoothList;//搜索的蓝牙设备
+    private List<BluetoothBean> mBluetoothList2;//去重的蓝牙设备
     private PopupWindow pw;
     private String TAG = "main";
     private ProgressDialog pdSearch;//搜索时
@@ -75,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button_connect).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i(TAG, "onClick(MainActivity.java:78)--->> " + "onClick");
                 searchBlueToothDevice();
             }
         });
@@ -87,7 +88,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void connection() {
-        Log.i(TAG, "connection(MainActivity.java:90)--->> " + "connection");
         conn = new PrinterServiceConnection();
         final Intent intent = new Intent();
         intent.setAction("com.gprinter.aidl.GpPrintService");
@@ -98,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
     private class PrinterServiceConnection implements ServiceConnection {
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            Log.i(TAG, "onServiceDisconnected(MainActivity.java:101)--->> " + "onServiceDisconnected");
             mGpService = null;
         }
 
@@ -109,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void searchBlueToothDevice() {
+
         Log.i(TAG, "searchBlueToothDevice(MainActivity.java:112)--->> " + "searchBlueToothDevice");
 
         pdSearch = ProgressDialog.show(MainActivity.this, "", "连接中", true, true);
@@ -150,20 +150,13 @@ public class MainActivity extends AppCompatActivity {
             //开始搜索
             adapter.startDiscovery();
 
-            if (receiver != null) {
-                unregisterReceiver(receiver);
-                receiver = null;
-            }
-
             // 设置广播信息过滤
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction(BluetoothDevice.ACTION_FOUND);
             intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-            if (receiver == null) {
-                // 注册广播接收器，接收并处理搜索结果
-                receiver = new MyBroadcastReceiver();
-                registerReceiver(receiver, intentFilter);
-            }
+            // 注册广播接收器，接收并处理搜索结果
+            receiver = new MyBroadcastReceiver();
+            registerReceiver(receiver, intentFilter);
         }
     }
 
@@ -188,8 +181,8 @@ public class MainActivity extends AppCompatActivity {
                 bluetoothBean.mBluetoothDevice = adapter.getRemoteDevice(bluetoothBean.mBluetoothAddress);
                 mBluetoothList.add(bluetoothBean);
 
-                Log.i(TAG, "onReceive(MainActivity.java:191)--->> " + device.getName());
-                Log.i(TAG, "onReceive(MainActivity.java:192)--->> " + mBluetoothList.size());
+                Log.i(TAG, "onReceive(MainActivity.java:184)--->> " + device.getName());
+                Log.i(TAG, "onReceive(MainActivity.java:185)--->> " + mBluetoothList.size());
 
 //                if (device.getName().startsWith("Printer_29D0")) {
 //                    //取消搜索
@@ -217,12 +210,24 @@ public class MainActivity extends AppCompatActivity {
 //                    }
 //                }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                Log.i(TAG, "onReceive(MainActivity.java:220)--->> " + "搜索完成");
+                Log.i(TAG, "onReceive(MainActivity.java:213)--->> " + "搜索完成");
                 pdSearch.dismiss();
                 if (0 == mBluetoothList.size())
                     Toast.makeText(MainActivity.this, "搜索不到蓝牙设备", Toast.LENGTH_SHORT).show();
-                else
-                    showBluetoothPop(mBluetoothList);
+                else {
+                    //去重HashSet add会返回一个boolean值，插入的值已经存在就会返回false 所以true就是不重复的
+                    HashSet<BluetoothBean> set = new HashSet<>();
+                    mBluetoothList2 = new ArrayList<>();
+                    for (BluetoothBean bean : mBluetoothList) {
+                        boolean add = set.add(bean);
+                        if (add) {
+                            mBluetoothList2.add(bean);
+                        }
+                    }
+                    showBluetoothPop(mBluetoothList2);
+                }
+
+                unregisterReceiver(receiver);
             }
         }
     }
@@ -236,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                if (0 != mBluetoothList.size()) {
+                if (0 != mBluetoothList2.size()) {
                     closePopupWindow();
                     pdConnect = ProgressDialog.show(MainActivity.this, "", "开始连接", true, true);
                     pdConnect.setCanceledOnTouchOutside(false);
@@ -284,12 +289,12 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return mBluetoothList.size();
+            return mBluetoothList2.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return mBluetoothList.get(position);
+            return mBluetoothList2.get(position);
         }
 
         @Override
@@ -309,8 +314,8 @@ public class MainActivity extends AppCompatActivity {
             }
             holder.item_text = convertView.findViewById(R.id.item_text);
             holder.item_text_address = convertView.findViewById(R.id.item_text_address);
-            holder.item_text.setText(mBluetoothList.get(position).mBluetoothName);
-            holder.item_text_address.setText(mBluetoothList.get(position).mBluetoothAddress);
+            holder.item_text.setText(mBluetoothList2.get(position).mBluetoothName);
+            holder.item_text_address.setText(mBluetoothList2.get(position).mBluetoothAddress);
             return convertView;
         }
 
@@ -359,9 +364,9 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             adapter.cancelDiscovery();
             try {
-                Log.i(TAG, "run(MainActivity.java:362)--->> " + "连接socket");
+                Log.i(TAG, "run(MainActivity.java:367)--->> " + "连接socket");
                 if (socket.isConnected()) {
-                    Log.i(TAG, "run(MainActivity.java:364)--->> " + "已经连接过了");
+                    Log.i(TAG, "run(MainActivity.java:369)--->> " + "已经连接过了");
                 } else {
                     if (socket != null) {
                         try {
@@ -371,22 +376,22 @@ public class MainActivity extends AppCompatActivity {
                                     case GpDevice.STATE_CONNECTED:
                                         break;
                                     case GpDevice.STATE_LISTEN:
-                                        Log.i(TAG, "run(MainActivity.java:374)--->> " + "state:STATE_LISTEN");
+                                        Log.i(TAG, "run(MainActivity.java:379)--->> " + "state:STATE_LISTEN");
                                         break;
                                     case GpDevice.STATE_CONNECTING:
-                                        Log.i(TAG, "run(MainActivity.java:377)--->> " + "state:STATE_CONNECTING");
+                                        Log.i(TAG, "run(MainActivity.java:382)--->> " + "state:STATE_CONNECTING");
                                         break;
                                     case GpDevice.STATE_NONE:
-                                        Log.i(TAG, "run(MainActivity.java:380)--->> " + "state:STATE_NONE");
+                                        Log.i(TAG, "run(MainActivity.java:385)--->> " + "state:STATE_NONE");
                                         registerBroadcast();
                                         mGpService.openPort(0, 4, mmDevice.getAddress(), 0);
                                         break;
                                     default:
-                                        Log.i(TAG, "run(MainActivity.java:385)--->> " + "state:default");
+                                        Log.i(TAG, "run(MainActivity.java:390)--->> " + "state:default");
                                         break;
                                 }
                             } else {
-                                Log.i(TAG, "run(MainActivity.java:389)--->> " + "mGpService IS NULL");
+                                Log.i(TAG, "run(MainActivity.java:394)--->> " + "mGpService IS NULL");
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -394,7 +399,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             } catch (Exception connectException) {
-                Log.i(TAG, "run(MainActivity.java:397)--->> " + "连接失败");
+                Log.i(TAG, "run(MainActivity.java:402)--->> " + "连接失败");
                 try {
                     if (socket != null) {
                         mGpService.closePort(0);
@@ -422,22 +427,22 @@ public class MainActivity extends AppCompatActivity {
                 int type = intent.getIntExtra(GpPrintService.CONNECT_STATUS, 0);
                 int id = intent.getIntExtra(GpPrintService.PRINTER_ID, 0);
                 if (type == GpDevice.STATE_CONNECTING) {
-                    Log.i(TAG, "onReceive(MainActivity.java:425)--->> " + "STATE_CONNECTING");
+                    Log.i(TAG, "onReceive(MainActivity.java:430)--->> " + "STATE_CONNECTING");
                 } else if (type == GpDevice.STATE_NONE) {
-                    Log.i(TAG, "onReceive(MainActivity.java:427)--->> " + "STATE_NONE");
+                    Log.i(TAG, "onReceive(MainActivity.java:432)--->> " + "STATE_NONE");
                     showErrorDialog();
                 } else if (type == GpDevice.STATE_VALID_PRINTER) {
                     //打印机-有效的打印机
-                    Log.i(TAG, "onReceive(MainActivity.java:431)--->> " + "STATE_VALID_PRINTER");
+                    Log.i(TAG, "onReceive(MainActivity.java:436)--->> " + "STATE_VALID_PRINTER");
                 } else if (type == GpDevice.STATE_INVALID_PRINTER) {
-                    Log.i(TAG, "onReceive(MainActivity.java:433)--->> " + "STATE_INVALID_PRINTER");
+                    Log.i(TAG, "onReceive(MainActivity.java:438)--->> " + "STATE_INVALID_PRINTER");
                 } else if (type == GpDevice.STATE_CONNECTED) {
                     //表示已连接可以打印
-                    Log.i(TAG, "onReceive(MainActivity.java:436)--->> " + "STATE_CONNECTED");
+                    Log.i(TAG, "onReceive(MainActivity.java:441)--->> " + "STATE_CONNECTED");
                     unregisterReceiver(printerStatusBroadcastReceiver);
                     showSuccessDialog();
                 } else if (type == GpDevice.STATE_LISTEN) {
-                    Log.i(TAG, "onReceive(MainActivity.java:440)--->> " + "STATE_LISTEN");
+                    Log.i(TAG, "onReceive(MainActivity.java:445)--->> " + "STATE_LISTEN");
                 }
             }
         }
@@ -492,14 +497,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void printOrder() {
-        Log.i(TAG, "printOrder(MainActivity.java:495)--->> " + "printOrder");
+        Log.i(TAG, "printOrder(MainActivity.java:500)--->> " + "printOrder");
         LabelCommand tsc = new LabelCommand();
         tsc.addSize(40, 30); // 设置标签尺寸，按照实际尺寸设置
         tsc.addGap(1); // 设置标签间隙，按照实际尺寸设置，如果为无间隙纸则设置为0
         tsc.addDirection(LabelCommand.DIRECTION.FORWARD, LabelCommand.MIRROR.NORMAL);// 设置打印方向
         tsc.addReference(0, 0);// 设置原点坐标
         tsc.addTear(EscCommand.ENABLE.ON); // 撕纸模式开启
-        Log.i(TAG, "sendLabel(MainActivity.java:502)--->> " + EscCommand.ENABLE.ON.getValue());
+        Log.i(TAG, "sendLabel(MainActivity.java:507)--->> " + EscCommand.ENABLE.ON.getValue());
 
         tsc.addCls();// 清除打印缓冲区
         // 绘制简体中文
@@ -549,7 +554,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onDestroy() {
-        Log.i(TAG, "onDestroy(MainActivity.java:552)--->> " + "onDestroy");
+        Log.i(TAG, "onDestroy(MainActivity.java:557)--->> " + "onDestroy");
         super.onDestroy();
         if (conn != null) {
             unbindService(conn);
