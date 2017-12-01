@@ -131,21 +131,14 @@ public void searchBlueToothDevice() {
         if (adapter.isEnabled()) {  
             //开始搜索  
             adapter.startDiscovery();  
-  
-            if (receiver != null) {  
-                unregisterReceiver(receiver);  
-                receiver = null;  
-            }  
-  
+
             // 设置广播信息过滤  
             IntentFilter intentFilter = new IntentFilter();  
             intentFilter.addAction(BluetoothDevice.ACTION_FOUND);  
             intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);  
-            if (receiver == null) {  
-                // 注册广播接收器，接收并处理搜索结果  
-                receiver = new MyBroadcastReceiver();  
-                registerReceiver(receiver, intentFilter);  
-            }  
+            // 注册广播接收器，接收并处理搜索结果  
+            receiver = new MyBroadcastReceiver();  
+            registerReceiver(receiver, intentFilter);  
         }  
     }  
 ```
@@ -180,8 +173,19 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
                 pdSearch.dismiss();  
                 if (0 == mBluetoothList.size())  
                     Toast.makeText(MainActivity.this, "搜索不到蓝牙设备", Toast.LENGTH_SHORT).show();  
-                else  
-                    showBluetoothPop(mBluetoothList);  
+                else {
+                    //去重HashSet add会返回一个boolean值，插入的值已经存在就会返回false 所以true就是不重复的
+                    HashSet<BluetoothBean> set = new HashSet<>();
+                    mBluetoothList2 = new ArrayList<>();
+                    for (BluetoothBean bean : mBluetoothList) {
+                        boolean add = set.add(bean);
+                        if (add) {
+                            mBluetoothList2.add(bean);
+                        }
+                    }
+                    showBluetoothPop(mBluetoothList2);
+                } 
+                unregisterReceiver(receiver);  
             }  
         }  
     }  
@@ -198,7 +202,7 @@ private void showBluetoothPop(final List<BluetoothBean> bluetoothList) {
        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {  
            @Override  
            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {  
-               if (0 != mBluetoothList.size()) {  
+               if (0 != mBluetoothList2.size()) {  
                    closePopupWindow();  
                    pdConnect = ProgressDialog.show(MainActivity.this, "", "开始连接", true, true);  
                    pdConnect.setCanceledOnTouchOutside(false);  
