@@ -9,7 +9,7 @@ Android蓝牙连打印机
 
 
 以Gprinter佳博打印机为例，从蓝牙到打印。很简单的 >_< <br>
-demo环境：as3.0。文末附github地址。
+demo环境：as3.0。
 
 ### 1、去官网下载安卓版SDK，解压并开始配置
 app目录下新建libs文件夹，拷入jar包并add as library，具体如图<br>
