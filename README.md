@@ -19,7 +19,7 @@ app目录下新建libs文件夹，拷入jar包并add as library，具体如图<b
 ![](http://img.blog.csdn.net/20171129162047492?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWVjaGFvYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
 
 main文件夹目录下新建jniLibs文件夹 <br>
-![](http://img.blog.csdn.net/20171129161947120?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWVjaGFvYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+![](http://img.blog.csdn.net/20171129162119817?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWVjaGFvYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
 
 ### 2、AndroidManifest文件中添加权限和service
 ```
