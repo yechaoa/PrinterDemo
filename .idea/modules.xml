@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/AndroidProjects-PrinterDemo.iml" filepath="$PROJECT_DIR$/AndroidProjects-PrinterDemo.iml" group="PrinterDemo" />
       <module fileurl="file://$PROJECT_DIR$/PrinterDemo.iml" filepath="$PROJECT_DIR$/PrinterDemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/PrinterDemo-app.iml" filepath="$PROJECT_DIR$/app/PrinterDemo-app.iml" group="PrinterDemo/app" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
