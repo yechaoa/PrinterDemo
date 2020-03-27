@@ -33,12 +33,15 @@ Android蓝牙连打印机，博客地址：http://blog.csdn.net/yechaoa/article/
 # 集成配置
 
 1.添加jar包，在app目录下新建libs文件夹，拷入jar文件并Add As Library
+
 ![](https://github.com/yechaoa/PrinterDemo/raw/master/pic/4.png)
 
 2.在main目录下新建jniLibs目录，并拷入so文件
+
 ![](https://github.com/yechaoa/PrinterDemo/raw/master/pic/5.png)
 
-3. 配置我们的manifest文件，添加必要的权限
+3.配置我们的manifest文件，添加必要的权限
+
 ```
     <!-- 打印相关权限 -->
     <uses-permission android:name="android.permission.INTERNET" />
